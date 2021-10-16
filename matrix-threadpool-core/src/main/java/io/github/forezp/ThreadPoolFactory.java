@@ -52,7 +52,7 @@ public class ThreadPoolFactory {
         if (threadPoolMap.get(identifier) != null) {
             return (ScheduledThreadPoolExecutor) threadPoolMap.get(identifier);
         } else {
-            ScheduledThreadPoolExecutor newThreadPool = (ScheduledThreadPoolExecutor) Executors.newSingleThreadScheduledExecutor();
+            ScheduledThreadPoolExecutor newThreadPool = new ScheduledThreadPoolExecutor(1);
             if (newThreadPool != null) {
                 threadPoolMap.putIfAbsent(identifier, newThreadPool);
             }
