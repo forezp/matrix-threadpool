@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ThreadPoolFactory {
 
     private Map<String, ThreadPoolExecutor> threadPoolMap = new ConcurrentHashMap<>();
-    private static final String DEFAULT_THREAD_POOL = "defaultThreadPool";
+    public static final String DEFAULT_THREAD_POOL = "defaultThreadPool";
+    public static final String DEFAULT_SCHEDUALAL_THREAD_POOL = "defaultSchedualThreadPool";
+    public static final String DEFAULT__SINGLE_SCHEDUALAL_THREAD_POOL = "defaultSingleSchedualThreadPool";
     private ThreadParameter threadParameter;
 
     public ThreadPoolFactory(ThreadParameter threadParameter) {
@@ -24,6 +26,38 @@ public class ThreadPoolFactory {
 
     public ThreadPoolExecutor createDefaultPoolExecutor() {
         return createThreadPoolExecutor(DEFAULT_THREAD_POOL);
+    }
+
+    public ScheduledThreadPoolExecutor createScheduledThreadPoolExecutor(int coreSize) {
+        return createScheduledThreadPoolExecutor(DEFAULT_SCHEDUALAL_THREAD_POOL, coreSize);
+    }
+
+    public ScheduledThreadPoolExecutor createScheduledThreadPoolExecutor(String identifier, int coreSize) {
+        if (threadPoolMap.get(identifier) != null) {
+            return (ScheduledThreadPoolExecutor) threadPoolMap.get(identifier);
+        } else {
+            ScheduledThreadPoolExecutor newThreadPool = new ScheduledThreadPoolExecutor(coreSize);
+            if (newThreadPool != null) {
+                threadPoolMap.putIfAbsent(identifier, newThreadPool);
+            }
+            return newThreadPool;
+        }
+    }
+
+    public ScheduledThreadPoolExecutor createSingleScheduledThreadPoolExecutor() {
+        return createSingleScheduledThreadPoolExecutor(DEFAULT__SINGLE_SCHEDUALAL_THREAD_POOL);
+    }
+
+    public ScheduledThreadPoolExecutor createSingleScheduledThreadPoolExecutor(String identifier) {
+        if (threadPoolMap.get(identifier) != null) {
+            return (ScheduledThreadPoolExecutor) threadPoolMap.get(identifier);
+        } else {
+            ScheduledThreadPoolExecutor newThreadPool = (ScheduledThreadPoolExecutor) Executors.newSingleThreadScheduledExecutor();
+            if (newThreadPool != null) {
+                threadPoolMap.putIfAbsent(identifier, newThreadPool);
+            }
+            return newThreadPool;
+        }
     }
 
     public ThreadPoolExecutor createThreadPoolExecutor(String identifier) {
